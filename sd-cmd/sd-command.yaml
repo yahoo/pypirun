@@ -1,0 +1,21 @@
+# Copyright 2019, Oath Inc.
+# Licensed under the terms of the BSD 3 Clause license. See LICENSE file in project root for terms.
+namespace: python # Namespace for the command
+name: pypirun # Command name
+version: '1.0' # Major and Minor version number (patch is automatic), must be a string
+description: |
+  Run a command line utility from inside a python package without it having to be
+  installed first.
+
+  Example: Run an ansible command from the ansible package
+
+    sd-cmd python/pypirun@latest ansible ansible all -m ping -u bruce
+
+usage: |
+  sd-cmd exec python/pypirun@<VERSION> <PACKAGE> <COMMAND>
+  Package: Python package containing the command
+  Command: Command to run
+maintainer: python@ouroath.com
+format: binary # Format the command is in (binary, habitat)
+binary:
+    file: ./pypirun.sh
