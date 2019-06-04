@@ -1,7 +1,5 @@
 # pypirun
 
-![banner](logo.png)
-
 [![Build Status](https://cd.screwdriver.cd/pipelines/2852/badge)](https://cd.screwdriver.cd/pipelines/2852)
 [![Codestyle](https://img.shields.io/badge/code%20style-pep8-lightgrey.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![Code Coverage](https://codecov.io/gh/yahoo/pypirun/branch/master/graph/badge.svg)](https://codecov.io/gh/yahoo/pypirun)
