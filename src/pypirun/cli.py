@@ -22,6 +22,29 @@ def interpreter_version(interpreter):
 
 
 def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False):
+    """
+    Install a package and run a command in a temporary Python virtualenv
+    
+    Parameters
+    ==========
+    package: str
+        A string containing a comma seperated list of packages to install.
+    
+    command: str
+        The command to run in the shell once the package is installed
+        
+    interpreter: str
+        The python interpreter executable to use to create the virtualenv
+    
+    debug: bool, optional
+        Print more useful debug output.  Default: False
+    
+    no_cache_dir: bool, optional
+        If True, pass the no-cache-dir flag to the pip command to disable pip package caching.  Default: False
+    
+    upgrade_setuptools: bool, optional
+        Upgrade setuptools after creating the virtualenv but before installing packages.  Default: False
+    """
     packages = package.split(',')
 
     with tempfile.TemporaryDirectory() as tempdir:
@@ -74,6 +97,14 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
 
 
 def main():
+    """
+    Command line interface entrypoint
+    
+    Returns
+    =======
+    int:
+        return code from running the command
+    """
     try:
         args = parse_arguments()
     except ParseError:
