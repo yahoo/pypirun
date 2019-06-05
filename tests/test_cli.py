@@ -26,15 +26,19 @@ class TestClass(unittest.TestCase):
 
     def test__run__upgrade_setuptools(self):
         sys.argv = ['pypirun', '--upgrade_setuptools', '.', 'pypirun']
-        cli.main()
+        self.assertEqual(cli.main(), 1)
 
     def test__run__forced_install(self):
         sys.argv = ['pypirun', '--debug', '--always_install', '.', 'pypirun']
-        cli.main()
+        self.assertEqual(cli.main(), 1)
 
     def test__run__invalid_command(self):
         sys.argv = ['pypirun', '--debug', '--always_install', '.', 'pypirun', 'fabzkkkks']
-        cli.main()
+        self.assertEqual(cli.main(), 1)
+
+    def test__run__good_return(self):
+        sys.argv = ['pypirun', 'serviceping', 'serviceping', '-c', '1', 'yahoo.com']
+        self.assertEqual(cli.main(), 0)
 
     def test__interpreter_version__(self):
         result = cli.interpreter_version(sys.executable)

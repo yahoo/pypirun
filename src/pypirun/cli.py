@@ -96,7 +96,7 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
             subprocess.check_call(f'{venv_dir}/bin/{command}', shell=True)  # nosec
         except subprocess.CalledProcessError as error:  # pragma: no cover
             return error.returncode
-        return 0
+        return 0  # pragma: no cover
 
 
 def main():
