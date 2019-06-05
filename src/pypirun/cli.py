@@ -3,7 +3,6 @@
 """
 pypirun command line utility
 """
-import json
 import os
 import shutil
 import subprocess  # nosec
@@ -22,20 +21,47 @@ def interpreter_version(interpreter):
 
 
 def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False):
+    """
+    Install a package and run a command in a temporary Python virtualenv
+    
+    Parameters
+    ==========
+    package: str
+        A string containing a comma seperated list of packages to install.
+    
+    command: str
+        The command to run in the shell once the package is installed
+        
+    interpreter: str
+        The python interpreter executable to use to create the virtualenv
+    
+    debug: bool, optional
+        Print more useful debug output.  Default: False
+    
+    no_cache_dir: bool, optional
+        If True, pass the no-cache-dir flag to the pip command to disable pip package caching.  Default: False
+    
+    upgrade_setuptools: bool, optional
+        Upgrade setuptools after creating the virtualenv but before installing packages.  Default: False
+    """
     packages = package.split(',')
 
     with tempfile.TemporaryDirectory() as tempdir:
         venv_dir = os.path.join(tempdir, '.venv')
         venv_bin = os.path.join(venv_dir, 'bin')
         venv_python = os.path.join(venv_bin, 'python3')
-        venv_pip = os.path.join(venv_bin, 'pip')
+        venv_pip = os.path.join(venv_bin, 'pip3')
 
         pip_args = []
         if no_cache_dir:  # pragma: no cover
             pip_args = ['--no-cache-dir']
 
         # Create venv
-        output = subprocess.check_output([interpreter, '-m', 'venv', venv_dir])  # nosec
+        try:
+            output = subprocess.check_output([interpreter, '-m', 'venv', venv_dir])  # nosec
+        except subprocess.CalledProcessError:  # pragma: no cover
+            print('Failed to create temporary virtualenv using the', interpreter, 'python interpreter')
+            return 1
         if debug:
             if output.decode().strip():  # pragma: no cover
                 print(output.decode().strip())
@@ -74,6 +100,14 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
 
 
 def main():
+    """
+    Command line interface entrypoint
+    
+    Returns
+    =======
+    int:
+        return code from running the command
+    """
     try:
         args = parse_arguments()
     except ParseError:
@@ -83,6 +117,9 @@ def main():
     command = ' '.join(args.command)
     if not interpreter:    # pragma: no cover
         interpreter = which('python3')
+        if not interpreter:
+            print('Unable to find python3 interpreter')
+            return 1
 
     if args.always_install or not shutil.which(command_file):
         return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools)

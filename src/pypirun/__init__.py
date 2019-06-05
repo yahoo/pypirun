@@ -3,8 +3,8 @@
 """
 pypirun module
 """
-import pkg_resources
 from typing import List
+import pkg_resources
 
 
 __all__: List[str] = []
