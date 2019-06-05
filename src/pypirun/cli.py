@@ -50,7 +50,7 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
         venv_dir = os.path.join(tempdir, '.venv')
         venv_bin = os.path.join(venv_dir, 'bin')
         venv_python = os.path.join(venv_bin, 'python3')
-        venv_pip = os.path.join(venv_bin, 'pip')
+        venv_pip = os.path.join(venv_bin, 'pip3')
 
         pip_args = []
         if no_cache_dir:  # pragma: no cover
@@ -117,6 +117,9 @@ def main():
     command = ' '.join(args.command)
     if not interpreter:    # pragma: no cover
         interpreter = which('python3')
+        if not interpreter:
+            print('Unable to find python3 interpreter')
+            return 1
 
     if args.always_install or not shutil.which(command_file):
         return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools)
