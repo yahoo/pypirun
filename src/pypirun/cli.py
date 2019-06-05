@@ -57,7 +57,11 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
             pip_args = ['--no-cache-dir']
 
         # Create venv
-        output = subprocess.check_output([interpreter, '-m', 'venv', venv_dir])  # nosec
+        try:
+            output = subprocess.check_output([interpreter, '-m', 'venv', venv_dir])  # nosec
+        except subprocess.CalledProcessError:
+            print('Failed to create temporary virtualenv using the, interpreter, 'python interpreter')
+                  return 1
         if debug:
             if output.decode().strip():  # pragma: no cover
                 print(output.decode().strip())
