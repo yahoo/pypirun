@@ -3,7 +3,6 @@
 """
 pypirun command line utility
 """
-import json
 import os
 import shutil
 import subprocess  # nosec
