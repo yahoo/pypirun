@@ -61,7 +61,7 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
             output = subprocess.check_output([interpreter, '-m', 'venv', venv_dir])  # nosec
         except subprocess.CalledProcessError:  # pragma: no cover
             print('Failed to create temporary virtualenv using the', interpreter, 'python interpreter')
-                  return 1
+            return 1
         if debug:
             if output.decode().strip():  # pragma: no cover
                 print(output.decode().strip())
