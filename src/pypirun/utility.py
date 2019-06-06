@@ -44,7 +44,7 @@ def which(filename, allow_symlink=False):
     allow_symlink: bool
         If True, return filenames that are symlinks
     """
-    if allow_symlink:
+    if allow_symlink:  # pragma: no cover
         return shutil.which(filename)
 
     search_dirs = os.environ.get('PATH', '').split(':')

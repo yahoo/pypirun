@@ -13,7 +13,7 @@ class TestClass(unittest.TestCase):
         sys.argv = self._argv
 
     def test__install_and_run(self):
-        rc = cli.install_and_run(package='.', command='pypirun_true', interpreter=sys.executable)
+        rc = cli.install_and_run(package='.', command='pypirun_true', interpreter=cli.interpreter_parent(sys.executable))
         self.assertEqual(rc, 0)
 
     def test__no_args(self):
