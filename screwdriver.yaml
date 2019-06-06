@@ -24,6 +24,12 @@ jobs:
     template: python/validate_security
     requires: [~commit, ~pr]
   
+  validate_sd_cmd:
+    image: node:8
+    steps:
+      - validate: sd-cmd validate -f sd-cmd/sd-command.yaml
+    requires: [~commit, ~pr]
+
   generate_version:
     template: python/generate_version
     requires: [~commit]
@@ -50,13 +56,29 @@ jobs:
   publish_sd_cmd:
     image: node:8
     steps:
-      - validate: sd-cmd validate -f sd-cmd/sd-command.yaml
       - publish: sd-cmd publish -f sd-cmd/sd-command.yaml
-    requires: [verify_test_package]
+    requires: [validate_sd_cmd]
 
-  test_sd_cmd:
-    image: docker-registry.ops.yahoo.com:4443/python/ylinux75
+  test_sd_cmd_alpine:
+    image: alpine
     steps:
-      - testpypirun: sd-cmd pythonv5/pypirun@latest serviceping serviceping -c 1 yahoo.com
-      - promote: sd-cmd promote pythonv5/pypirun latest stable
+      - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
+
+  test_sd_cmd_fedora:
+    image: fedora
+    steps:
+      - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
+    requires: [publish_sd_cmd]
+
+  test_sd_cmd_ubuntu:
+    image: ubuntu
+    steps:
+      - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
+    requires: [publish_sd_cmd]
+
+  promote_sd_cmd:
+    image: alpine
+    steps:
+      - promote: sd-cmd promote python/pypirun latest stable
+    requires: [test_sd_cmd_alpine, test_sd_cmd_fedora, test_sd_cmd_ubuntu]
