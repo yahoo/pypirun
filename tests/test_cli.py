@@ -41,7 +41,7 @@ class TestClass(unittest.TestCase):
         self.assertEqual(cli.main(), 1)
 
     def test__run__good_return(self):
-        sys.argv = ['pypirun', '.', 'pypirun_true']
+        sys.argv = ['pypirun', '--debug', '--always_install', '.', 'pypirun_true']
         self.assertEqual(cli.main(), 0)
 
     def test__interpreter_version__(self):
