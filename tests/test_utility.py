@@ -29,3 +29,6 @@ class TestUtility(unittest.TestCase):
     def test__which__allow_symlink(self):
         result = utility.which('python3', allow_symlink=True)
         self.assertEqual(result, shutil.which('python3'))
+
+    def test__which__allow_symlink__false(self):
+        result = utility.which('python3', allow_symlink=False)
