@@ -30,15 +30,17 @@ def interpreter_parent(interpreter):
     str:
         parent interpreter
     """
-    basename = os.path.basename(interpreter)
-    if basename == 'python':
-        basename = 'python3'
     try:
-        output = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)'])  # nosec
-    except subprocess.CalledProcessError:
+        real_prefix = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)']).decode(errors='ignore').strip()  # nosec
+    except subprocess.CalledProcessError:  # pragma: no cover
         return interpreter
-    #  python3 -c "import sys;print(f'{sys.version_info.major}.{sys.version_info.minor}')"
-    bin_dir = os.path.join(output.decode(errors='ignore').strip(), 'bin')
+    try:
+        major_minor = subprocess.check_output([interpreter, '-c', 'import sys;print(f"{sys.version_info.major}.{sys.version_info.minor}")']).decode(errors='ignore').strip()  # nosec
+        basename = f'python{major_minor}'
+    except subprocess.CalledProcessError:  # pragma: no cover
+        basename = 'python3'
+
+    bin_dir = os.path.join(real_prefix, 'bin')
     interpreter = os.path.join(bin_dir, basename)
     return interpreter
 
@@ -68,10 +70,6 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
         Upgrade setuptools after creating the virtualenv but before installing packages.  Default: False
     """
     packages = package.split(',')
-
-    # In case the interpreter is in a virtualenv get the interpreter that created the virtualenv because nested
-    # virtualenv creation does not always work.
-    interpreter = interpreter_parent(interpreter)
 
     with tempfile.TemporaryDirectory() as tempdir:
         venv_dir = os.path.join(tempdir, '.venv')
@@ -148,10 +146,12 @@ def main():
     command_file = args.command[0]
     command = ' '.join(args.command)
     if not interpreter:    # pragma: no cover
+        interpreter = interpreter_parent(sys.executable)
+    if not interpreter:    # pragma: no cover
         interpreter = which('python3')
-        if not interpreter:
-            print('Unable to find python3 interpreter')
-            return 1
+    if not interpreter:    # pragma: no cover
+        print('Unable to find python3 interpreter')
+        return 1
 
     if args.always_install or not shutil.which(command_file):
         return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools)
@@ -160,4 +160,4 @@ def main():
         subprocess.check_call(command, shell=True)  # nosec
     except subprocess.CalledProcessError as error:
         return error.returncode
-    return 0
+    return 0  # pragma: no cover
