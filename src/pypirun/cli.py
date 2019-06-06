@@ -20,6 +20,28 @@ def interpreter_version(interpreter):
     return version
 
 
+def interpreter_parent(interpreter):
+    """
+    Get the parent python interpreter for interpreter (I.E the interpreter that created the virtualenv if it is an
+    interpreter in a virtualenv.
+
+    Returns
+    =======
+    str:
+        parent interpreter
+    """
+    basename = os.path.basename(interpreter)
+    if basename == 'python':
+        basename = 'python3'
+    try:
+        output = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)'])  # nosec
+    except subprocess.CalledProcessError:
+        return interpreter
+    bin_dir = os.path.join(output.decode(errors='ignore').strip(), 'bin')
+    interpreter = os.path.join(bin_dir, basename)
+    return interpreter
+
+
 def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False):
     """
     Install a package and run a command in a temporary Python virtualenv
@@ -46,11 +68,15 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
     """
     packages = package.split(',')
 
+    # In case the interpreter is in a virtualenv get the interpreter that created the virtualenv because nested
+    # virtualenv creation does not always work.
+    interpreter = interpreter_parent(interpreter)
+
     with tempfile.TemporaryDirectory() as tempdir:
         venv_dir = os.path.join(tempdir, '.venv')
         venv_bin = os.path.join(venv_dir, 'bin')
-        venv_python = os.path.join(venv_bin, 'python3')
-        venv_pip = os.path.join(venv_bin, 'pip3')
+        venv_python = os.path.join(venv_bin, 'python')
+        venv_pip = os.path.join(venv_bin, 'pip')
 
         pip_args = []
         if no_cache_dir:  # pragma: no cover
@@ -96,7 +122,11 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
             subprocess.check_call(f'{venv_dir}/bin/{command}', shell=True)  # nosec
         except subprocess.CalledProcessError as error:  # pragma: no cover
             return error.returncode
-        return 0  # pragma: no cover
+        return exit_ok()  # pragma: no cover
+
+
+def exit_ok():
+    return 0
 
 
 def main():

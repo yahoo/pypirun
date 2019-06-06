@@ -12,6 +12,10 @@ class TestClass(unittest.TestCase):
         super().tearDown()
         sys.argv = self._argv
 
+    def test__install_and_run(self):
+        rc = cli.install_and_run(package='.', command='pypirun_true', interpreter=sys.executable)
+        self.assertEqual(rc, 0)
+
     def test__no_args(self):
         sys.argv = ['pypirun']
         self.assertEqual(cli.main(), 1)
@@ -37,7 +41,7 @@ class TestClass(unittest.TestCase):
         self.assertEqual(cli.main(), 1)
 
     def test__run__good_return(self):
-        sys.argv = ['pypirun', 'serviceping', 'serviceping', '-c', '1', 'yahoo.com']
+        sys.argv = ['pypirun', '.', 'pypirun_true']
         self.assertEqual(cli.main(), 0)
 
     def test__interpreter_version__(self):
