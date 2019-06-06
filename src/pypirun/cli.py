@@ -20,6 +20,31 @@ def interpreter_version(interpreter):
     return version
 
 
+def interpreter_parent(interpreter):
+    """
+    Get the parent python interpreter for interpreter (I.E the interpreter that created the virtualenv if it is an
+    interpreter in a virtualenv.
+
+    Returns
+    =======
+    str:
+        parent interpreter
+    """
+    try:
+        real_prefix = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)']).decode(errors='ignore').strip()  # nosec
+    except subprocess.CalledProcessError:  # pragma: no cover
+        return interpreter
+    try:
+        major_minor = subprocess.check_output([interpreter, '-c', 'import sys;print(f"{sys.version_info.major}.{sys.version_info.minor}")']).decode(errors='ignore').strip()  # nosec
+        basename = f'python{major_minor}'
+    except subprocess.CalledProcessError:  # pragma: no cover
+        basename = 'python3'
+
+    bin_dir = os.path.join(real_prefix, 'bin')
+    interpreter = os.path.join(bin_dir, basename)
+    return interpreter
+
+
 def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False):
     """
     Install a package and run a command in a temporary Python virtualenv
@@ -49,8 +74,8 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
     with tempfile.TemporaryDirectory() as tempdir:
         venv_dir = os.path.join(tempdir, '.venv')
         venv_bin = os.path.join(venv_dir, 'bin')
-        venv_python = os.path.join(venv_bin, 'python3')
-        venv_pip = os.path.join(venv_bin, 'pip3')
+        venv_python = os.path.join(venv_bin, 'python')
+        venv_pip = os.path.join(venv_bin, 'pip')
 
         pip_args = []
         if no_cache_dir:  # pragma: no cover
@@ -96,7 +121,12 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
             subprocess.check_call(f'{venv_dir}/bin/{command}', shell=True)  # nosec
         except subprocess.CalledProcessError as error:  # pragma: no cover
             return error.returncode
-        return 0
+        return exit_ok()  # pragma: no cover
+
+
+def exit_ok():
+    """A python implementation of /bin/true that can be used for testing"""
+    return 0
 
 
 def main():
@@ -116,10 +146,12 @@ def main():
     command_file = args.command[0]
     command = ' '.join(args.command)
     if not interpreter:    # pragma: no cover
+        interpreter = interpreter_parent(sys.executable)
+    if not interpreter:    # pragma: no cover
         interpreter = which('python3')
-        if not interpreter:
-            print('Unable to find python3 interpreter')
-            return 1
+    if not interpreter:    # pragma: no cover
+        print('Unable to find python3 interpreter')
+        return 1
 
     if args.always_install or not shutil.which(command_file):
         return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools)
@@ -128,4 +160,4 @@ def main():
         subprocess.check_call(command, shell=True)  # nosec
     except subprocess.CalledProcessError as error:
         return error.returncode
-    return 0
+    return 0  # pragma: no cover
