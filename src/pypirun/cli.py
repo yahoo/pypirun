@@ -31,11 +31,11 @@ def interpreter_parent(interpreter):
         parent interpreter
     """
     try:
-        real_prefix = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)']).decode(errors='ignore').strip()  # nosec
+        real_prefix = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)'], stderr=subprocess.DEVNULL).decode(errors='ignore').strip()  # nosec
     except subprocess.CalledProcessError:  # pragma: no cover
         return interpreter
     try:
-        major_minor = subprocess.check_output([interpreter, '-c', 'import sys;print(f"{sys.version_info.major}.{sys.version_info.minor}")']).decode(errors='ignore').strip()  # nosec
+        major_minor = subprocess.check_output([interpreter, '-c', 'import sys;print(f"{sys.version_info.major}.{sys.version_info.minor}")'], stderr=subprocess.DEVNULL).decode(errors='ignore').strip()  # nosec
         basename = f'python{major_minor}'
     except subprocess.CalledProcessError:  # pragma: no cover
         basename = 'python3'

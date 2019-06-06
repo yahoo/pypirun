@@ -15,21 +15,21 @@
 # and Alpine environments.
 
 set -e
+export PATH=$PATH:/opt/python/cp38-cp38m/bin:/opt/python/cp37-cp37m/bin:/opt/python/cp36-cp36m/bin:/opt/python/bin:~/.local/bin
 PYTHON_VERSION="`python3 --version 2>/dev/null`" || true
-export PATH=$PATH:~/.local/bin
 
 function install_python {
     if [ "$PYTHON_VERSION" != "" ]; then
         return 0
     fi
     if [ -e "/usr/bin/yum" ]; then
-        yum install -y sudo python3-pip
+        yum install -y sudo python3-pip > /dev/null 2>&1
     fi
     if [ -e "/usr/bin/apt-get" ]; then
-        sudo -E apt-get install -y python3 python3-venv
+        apt-get install -y python3 python3-venv > /dev/null 2>&1
     fi
     if [ -e "/sbin/apk" ]; then
-        sudo -E apk add python3
+        apk add python3 > /dev/null 2>&1
     fi
 }
 
@@ -54,6 +54,15 @@ function pyrun_command {
     fi
 }
 
+function ensure_venv_works {
+    python3 -m venv /tmp/foo > /dev/null 2>&1|| RC="$?"
+    if [ "$RC" = "1" ]; then
+        PYTHON_VERSION=""
+        install_python
+    fi
+}
+
 install_python
+ensure_venv_works
 install_pyrun
 pypirun $@
