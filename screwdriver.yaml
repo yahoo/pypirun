@@ -62,6 +62,7 @@ jobs:
   test_sd_cmd_fedora:
     image: fedora:latest
     steps:
+      - install_dependencies: yum install -y findutils
       - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
 
@@ -87,4 +88,4 @@ jobs:
     image: node:8
     steps:
       - promote: sd-cmd promote python/pypirun latest stable
-    requires: [test_sd_cmd_alpine, test_sd_cmd_fedora, test_sd_cmd_manylinux2010, test_sd_cmd_ubuntu]
+    requires: [test_sd_cmd_fedora, test_sd_cmd_manylinux2010, test_sd_cmd_node, test_sd_cmd_ubuntu]
