@@ -47,3 +47,16 @@ jobs:
       PUBLISH: True
     requires: [verify_test_package]
 
+  publish_sd_cmd:
+    image: node:8
+    steps:
+      - validate: sd-cmd validate -f sd-cmd/sd-command.yaml
+      - publish: sd-cmd publish -f sd-cmd/sd-command.yaml
+    requires: [verify_test_package]
+
+  test_sd_cmd:
+    image: docker-registry.ops.yahoo.com:4443/python/ylinux75
+    steps:
+      - testpypirun: sd-cmd pythonv5/pypirun@latest serviceping serviceping -c 1 yahoo.com
+      - promote: sd-cmd promote pythonv5/pypirun latest stable
+    requires: [publish_sd_cmd]

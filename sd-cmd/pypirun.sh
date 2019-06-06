@@ -6,12 +6,12 @@
 # This command will handle bootstrapping the following:
 # - A python 3.x interpreter
 # - The Python package manager utility (pip)
-# - The ouroath.pypirun utility
+# - The pypirun utility
 #
 # Once everything is bootstrapped, it will run the pypirun command line utility
 # passing all command line arguments to it.
 #
-# The bootstrapping code can bootstrap Redhat/Fedora/Centos, Debian/Ubuntu
+# The bootstrapping code can bootstrap Fedora, Debian/Ubuntu
 # and Alpine environments.
 
 set -e
@@ -23,21 +23,7 @@ function install_python {
         return 0
     fi
     if [ -e "/usr/bin/yum" ]; then
-        grep Fedora /etc/redhat-release 2>/dev/null || RC="$?"
-        if [ "$RC" = "0" ]; then
-            yum install -y sudo python3-pip
-        else
-            if [ ! -e "/usr/bin/yum-config-manager" ]; then
-                sudo -E yum install -y yum-utils
-            fi
-            if [ ! -e "/etc/yum.repos.d/python_rpms.repo" ]; then
-                sudo -E yum-config-manager --add-repo https://edge.artifactory.yahoo.com:4443/artifactory/python_rpms/python_rpms.repo
-            fi
-            if [ ! -e "/opt/python/bin/python3.6" ]; then
-                sudo -E yum install -y yahoo_python36
-            fi
-            export PATH=$PATH:/opt/python/bin
-        fi
+        yum install -y sudo python3-pip
     fi
     if [ -e "/usr/bin/apt-get" ]; then
         sudo -E apt-get install -y python3 python3-venv
@@ -53,7 +39,7 @@ function python_bin_dir {
 
 function install_pyrun {
     if [ ! -e "`python_bin_dir`/pypirun" ]; then
-        python3 -m pip install -q --user --index-url=https://edge.dist.yahoo.com:4443/artifactory/api/pypi/pypi/simple ouroath.pyrun 2> /dev/null
+        python3 -m pip install -q --user pypirun 2> /dev/null
     fi
 }
 
