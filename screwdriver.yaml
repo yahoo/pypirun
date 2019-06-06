@@ -57,28 +57,35 @@ jobs:
     image: node:8
     steps:
       - publish: sd-cmd publish -f sd-cmd/sd-command.yaml
-    requires: [validate_sd_cmd]
+    requires: [validate_sd_cmd, validate_test, validate_lint, validate_codestyle, validate_safetydb, validate_security,  generate_version]
 
   test_sd_cmd_alpine:
-    image: alpine
+    image: alpine:latest
     steps:
       - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
 
   test_sd_cmd_fedora:
-    image: fedora
+    image: fedora:latest
+    steps:
+      - install_dependencies: yum install -y findutils
+      - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
+    requires: [publish_sd_cmd]
+
+  test_sd_cmd_node:
+    image: node:8
     steps:
       - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
 
   test_sd_cmd_ubuntu:
-    image: ubuntu
+    image: ubuntu:19.04
     steps:
       - testpypirun: sd-cmd python/pypirun@latest serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
 
   promote_sd_cmd:
-    image: alpine
+    image: alpine:latest
     steps:
       - promote: sd-cmd promote python/pypirun latest stable
     requires: [test_sd_cmd_alpine, test_sd_cmd_fedora, test_sd_cmd_ubuntu]
