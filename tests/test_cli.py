@@ -12,6 +12,10 @@ class TestClass(unittest.TestCase):
         super().tearDown()
         sys.argv = self._argv
 
+    def test__install_and_run(self):
+        rc = cli.install_and_run(package='.', command='pypirun_true', interpreter=cli.interpreter_parent(sys.executable))
+        self.assertEqual(rc, 0)
+
     def test__no_args(self):
         sys.argv = ['pypirun']
         self.assertEqual(cli.main(), 1)
@@ -26,15 +30,19 @@ class TestClass(unittest.TestCase):
 
     def test__run__upgrade_setuptools(self):
         sys.argv = ['pypirun', '--upgrade_setuptools', '.', 'pypirun']
-        cli.main()
+        self.assertEqual(cli.main(), 1)
 
     def test__run__forced_install(self):
         sys.argv = ['pypirun', '--debug', '--always_install', '.', 'pypirun']
-        cli.main()
+        self.assertEqual(cli.main(), 1)
 
     def test__run__invalid_command(self):
         sys.argv = ['pypirun', '--debug', '--always_install', '.', 'pypirun', 'fabzkkkks']
-        cli.main()
+        self.assertEqual(cli.main(), 1)
+
+    def test__run__good_return(self):
+        sys.argv = ['pypirun', '--debug', '--always_install', '.', 'pypirun_true']
+        self.assertEqual(cli.main(), 0)
 
     def test__interpreter_version__(self):
         result = cli.interpreter_version(sys.executable)
