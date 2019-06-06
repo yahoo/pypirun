@@ -37,6 +37,7 @@ def interpreter_parent(interpreter):
         output = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)'])  # nosec
     except subprocess.CalledProcessError:
         return interpreter
+    #  python3 -c "import sys;print(f'{sys.version_info.major}.{sys.version_info.minor}')"
     bin_dir = os.path.join(output.decode(errors='ignore').strip(), 'bin')
     interpreter = os.path.join(bin_dir, basename)
     return interpreter
