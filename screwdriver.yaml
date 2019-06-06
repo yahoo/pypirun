@@ -72,20 +72,14 @@ jobs:
       - testpypirun: sd-cmd python/pypirun@pre serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
 
-  test_sd_cmd_node:
-    image: node:8
-    steps:
-      - testpypirun: sd-cmd python/pypirun@pre serviceping serviceping -c 1 yahoo.com
-    requires: [publish_sd_cmd]
-
   test_sd_cmd_ubuntu:
-    image: ubuntu:latest
+    image: ubuntu:18.04
     steps:
       - testpypirun: sd-cmd python/pypirun@pre serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
 
   promote_sd_cmd:
-    image: node:8
+    image: quay.io/pypa/manylinux2010_x86_64
     steps:
       - promote: sd-cmd promote python/pypirun latest stable
-    requires: [test_sd_cmd_fedora, test_sd_cmd_manylinux2010, test_sd_cmd_node, test_sd_cmd_ubuntu]
+    requires: [test_sd_cmd_fedora, test_sd_cmd_manylinux2010, test_sd_cmd_ubuntu]
