@@ -126,6 +126,7 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
 
 
 def exit_ok():
+    """A python implementation of /bin/true that can be used for testing"""
     return 0
 
 
