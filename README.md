@@ -5,8 +5,8 @@
 [![Code Coverage](https://codecov.io/gh/yahoo/pypirun/branch/master/graph/badge.svg)](https://codecov.io/gh/yahoo/pypirun)
 [![Wheel](https://img.shields.io/pypi/wheel/pypirun.svg)](https://pypi.org/project/pypirun/)
 [![Version](https://img.shields.io/pypi/v/pypirun.svg)](https://pypi.org/project/pypirun/)
-[![License](https://img.shields.io/pypi/l/pypirun.svg)](https://pypi.org/project/pypirun/)
 [![Downloads](https://pepy.tech/badge/pypirun)](https://pepy.tech/project/pypirun)
+[![License](https://img.shields.io/pypi/l/pypirun.svg)](https://pypi.org/project/pypirun/)
 
 The **pypirun** command is a utility that allows running a python command line script from a python package, even if it is
 not installed.  
