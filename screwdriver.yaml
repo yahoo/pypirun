@@ -73,7 +73,7 @@ jobs:
     requires: [publish_sd_cmd]
 
   test_sd_cmd_ubuntu:
-    image: ubuntu:18.04
+    image: ubuntu
     steps:
       - testpypirun: sd-cmd python/pypirun@pre serviceping serviceping -c 1 yahoo.com
     requires: [publish_sd_cmd]
