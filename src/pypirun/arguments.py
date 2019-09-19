@@ -38,7 +38,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--debug', default=debug, action='store_true', help='Enable debug output')
     parser.add_argument('--always_install', default=False, action='store_true', help='Install the command even if it exists in the path')
     parser.add_argument('--no-cache-dir', default=False, action='store_true', help="Disable the pip cache when installing")
-    parser.add_argument('--upgrade_setuptools', default=False, action='store_true', help="Upgrade setuptools before installing")
+    parser.add_argument('--upgrade_pip', default=False, action='store_true', help='Upgrade the pip before installing packages')
+    parser.add_argument('--upgrade_setuptools', default=False, action='store_true', help="Upgrade setuptools before installing packages")
     parser.add_argument('package', type=str, help='Package the command is in')
     parser.add_argument('command', nargs='*', help='Command to run')
 

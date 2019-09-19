@@ -34,7 +34,7 @@ def interpreter_parent(interpreter):
         real_prefix = subprocess.check_output([interpreter, '-c', 'import sys;print(sys.real_prefix)'], stderr=subprocess.DEVNULL).decode(errors='ignore').strip()  # nosec
     except subprocess.CalledProcessError:  # pragma: no cover
         return interpreter
-    try:
+    try:  # pragma: no cover
         major_minor = subprocess.check_output([interpreter, '-c', 'import sys;print(f"{sys.version_info.major}.{sys.version_info.minor}")'], stderr=subprocess.DEVNULL).decode(errors='ignore').strip()  # nosec
         basename = f'python{major_minor}'
     except subprocess.CalledProcessError:  # pragma: no cover
@@ -45,7 +45,7 @@ def interpreter_parent(interpreter):
     return interpreter
 
 
-def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False):
+def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False, upgrade_pip=False):
     """
     Install a package and run a command in a temporary Python virtualenv
     
@@ -68,6 +68,9 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
     
     upgrade_setuptools: bool, optional
         Upgrade setuptools after creating the virtualenv but before installing packages.  Default: False
+
+    upgrade_pip: bool, optional
+        Upgrade pip after creating the virtualenv but before installing packages.  Default: False
     """
     packages = package.split(',')
 
@@ -93,6 +96,11 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
 
         if not os.path.exists(venv_pip):  # pragma: no cover
             output = subprocess.check_output([venv_python, '-m', 'pip', 'install', '--force-reinstall'] + pip_args + ['pip'], stderr=subprocess.STDOUT)  # nosec
+            if debug:  # pragma: no cover
+                print(output.decode())
+
+        if upgrade_pip:  # pragma: no cover
+            output = subprocess.check_output([venv_pip, 'install', '--upgrade'] + pip_args + ['pip'], stderr=subprocess.STDOUT)  # nosec
             if debug:  # pragma: no cover
                 print(output.decode())
 
@@ -154,7 +162,7 @@ def main():
         return 1
 
     if args.always_install or not shutil.which(command_file):
-        return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools)
+        return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools, upgrade_pip=args.upgrade_pip)
 
     try:
         subprocess.check_call(command, shell=True)  # nosec

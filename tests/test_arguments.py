@@ -35,5 +35,7 @@ class TestArguments(unittest.TestCase):
         self.assertEqual(result.interpreter, default_interpreter)
         self.assertFalse(result.debug)
         self.assertFalse(result.always_install)
+        self.assertFalse(result.upgrade_pip)
+        self.assertFalse(result.upgrade_setuptools)
         self.assertEqual(result.package, 'foo')
         self.assertEqual(result.command, ['bar'])
