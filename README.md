@@ -53,6 +53,8 @@ $ pip install pypirun
       --interpreter INTERPRETER  Python interpreter to use
       --debug                    Enable debug output
       --always_install           Install the command even if it exists in the path
+      --upgrade_pip              Upgrade the pip before installing packages
+      --upgrade_setuptools       Upgrade setuptools before installing packages
     
     Everything on the command line after the package name is executed in an environment with the package installed and on 
     the PATH.  As a result, the package and command must come after the optional arguments.
