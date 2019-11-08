@@ -1,7 +1,7 @@
 version: 4
 shared:
   environment:
-    PACKAGE_DIRECTORY: src/pypirun
+    PACKAGE_DIRECTORY: src
     
 jobs:
   validate_test:
