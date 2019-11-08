@@ -23,13 +23,17 @@ function install_python {
         return 0
     fi
     if [ -e "/usr/bin/yum" ]; then
-        yum install -y sudo python3-pip > /dev/null 2>&1
+        yum install -y python3-pip python3-devel which > /dev/null 2>&1
+        return 0
     fi
+    if [ -1 "
     if [ -e "/usr/bin/apt-get" ]; then
-        apt-get install -y python3 python3-venv > /dev/null 2>&1
+        apt-get install -y python3 python3-venv python3-pip > /dev/null 2>&1
+        return 0
     fi
     if [ -e "/sbin/apk" ]; then
-        apk add python3 > /dev/null 2>&1
+         apk --update add python3 python3-dev py3-pip openssl ca-certificates > /dev/null 2>&1
+         return 0
     fi
 }
 
@@ -44,9 +48,7 @@ function install_pyrun {
 }
 
 function pyrun_command {
-    set +e
-    PYRUN_COMMAND="`which pypirun 2>&1`"
-    set -e
+    PYRUN_COMMAND="`which pypirun 2>&1`" || RC="$?"
     if [ "$PYRUN_COMMAND" = "" ]; then
         if [ -e "~/.local/bin/pypirun" ]; then
             PYRUN_COMMAND="~/.local/bin/pypirun"
@@ -59,6 +61,11 @@ function ensure_venv_works {
     if [ "$RC" = "1" ]; then
         PYTHON_VERSION=""
         install_python
+    fi
+    python3 -m venv /tmp/foo > /dev/null 2>&1 || RC="$?"
+    if [ "$RC" = "1" ]; then
+        echo "Unable to install a Python interpreter with a working venv module" >&2
+        exit 1
     fi
 }
 
