@@ -57,14 +57,14 @@ function pyrun_command {
 }
 
 function ensure_venv_works {
-    python3 -m venv /tmp/foo > /dev/null 2>&1|| RC="$?"
+    python3 -m venv /tmp/foo > /dev/null 2>&1 || RC="$?"
     if [ "$RC" = "1" ]; then
         PYTHON_VERSION=""
         install_python
     fi
     python3 -m venv /tmp/foo > /dev/null 2>&1 || RC="$?"
     if [ "$RC" = "1" ]; then
-        echo "Unable to install a Python interpreter with a working venv module" >&2
+        echo "Unable to install a Python interpreter with a working venv module"
         exit 1
     fi
 }
