@@ -26,7 +26,6 @@ function install_python {
         yum install -y python3-pip python3-devel which > /dev/null 2>&1
         return 0
     fi
-    if [ -1 "
     if [ -e "/usr/bin/apt-get" ]; then
         apt-get install -y python3 python3-venv python3-pip > /dev/null 2>&1
         return 0
