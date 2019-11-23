@@ -75,4 +75,4 @@ function ensure_venv_works {
 install_python
 ensure_venv_works
 install_pyrun
-pypirun $@
+python3 -m pypirun $@
