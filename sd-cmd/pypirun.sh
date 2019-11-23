@@ -15,7 +15,7 @@
 # and Alpine environments.
 
 # set -e
-export PATH=$PATH:/opt/python/cp38-cp38m/bin:/opt/python/cp37-cp37m/bin:/opt/python/cp36-cp36m/bin:/opt/python/bin:~/.local/bin
+export PATH=$PATH:/opt/python/cp38-cp38m/bin:/opt/python/cp37-cp37m/bin:/opt/python/cp36-cp36m/bin:/opt/python/cp35-cp35m/bin:/opt/python/bin:/usr/local/bin:~/.local/bin
 PYTHON_VERSION="`python3 --version 2>/dev/null`" || true
 
 function install_python {
@@ -41,7 +41,9 @@ function python_bin_dir {
 }
 
 function install_pyrun {
-    if [ ! -e "`python_bin_dir`/pypirun" ]; then
+    python -m pypirun.utility 2>/dev/null
+    RC="$?"
+    if [ "$RC" != "0" ]; then
         python3 -m pip install -q --user pypirun 2> /dev/null
     fi
 }
