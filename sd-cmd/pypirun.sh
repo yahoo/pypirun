@@ -16,7 +16,11 @@
 
 # set -e
 export PATH=$PATH:/opt/python/cp38-cp38m/bin:/opt/python/cp37-cp37m/bin:/opt/python/cp36-cp36m/bin:/opt/python/cp35-cp35m/bin:/opt/python/bin:/usr/local/bin:~/.local/bin
-PYTHON_VERSION="`python3 --version 2>/dev/null`" || true
+VERSION="`python3 -c "import pip,sys,venv;print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))" 2>/dev/null`"
+RC="$?"
+if [ "$RC" != "0" ]; then
+    PYTHON_VERSION=""
+fi
 
 function install_python {
     if [ "$PYTHON_VERSION" != "" ]; then
@@ -44,7 +48,7 @@ function install_pyrun {
     python -m pypirun.utility 2>/dev/null
     RC="$?"
     if [ "$RC" != "0" ]; then
-        python3 -m pip install -q --user pypirun 2> /dev/null
+        python3 -m pip install -q pypirun 2> /dev/null
     fi
 }
 
@@ -58,7 +62,7 @@ function pyrun_command {
 }
 
 function ensure_venv_works {
-    python3 -m venv /tmp/foo > /dev/null 2>&1
+    python3 -m venv --clear /tmp/foo > /dev/null 2>&1
     RC="$?"
     if [ "$RC" = "1" ]; then
         PYTHON_VERSION=""
