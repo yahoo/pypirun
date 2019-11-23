@@ -14,7 +14,7 @@
 # The bootstrapping code can bootstrap Fedora, Debian/Ubuntu
 # and Alpine environments.
 
-set -e
+# set -e
 export PATH=$PATH:/opt/python/cp38-cp38m/bin:/opt/python/cp37-cp37m/bin:/opt/python/cp36-cp36m/bin:/opt/python/bin:~/.local/bin
 PYTHON_VERSION="`python3 --version 2>/dev/null`" || true
 
@@ -23,7 +23,7 @@ function install_python {
         return 0
     fi
     if [ -e "/usr/bin/yum" ]; then
-        yum install -y python3-pip python3-devel which > /dev/null 2>&1
+        yum install -y python3-pip python3-devel python3 which > /dev/null 2>&1
         return 0
     fi
     if [ -e "/usr/bin/apt-get" ]; then
@@ -31,7 +31,7 @@ function install_python {
         return 0
     fi
     if [ -e "/sbin/apk" ]; then
-         apk --update add python3 python3-dev py3-pip openssl ca-certificates > /dev/null 2>&1
+         apk --update add python3 python3-dev py3-pip py3-cffi py3-cparser py3-openssl py3-lxml gcc musl-dev libc-dev libffi libffi-dev libxml2-dev libxslt-dev openssl openssl-dev ca-certificates > /dev/null 2>&1
          return 0
     fi
 }
@@ -56,12 +56,14 @@ function pyrun_command {
 }
 
 function ensure_venv_works {
-    python3 -m venv /tmp/foo > /dev/null 2>&1 || RC="$?"
+    python3 -m venv /tmp/foo > /dev/null 2>&1
+    RC="$?"
     if [ "$RC" = "1" ]; then
         PYTHON_VERSION=""
         install_python
     fi
-    python3 -m venv /tmp/foo > /dev/null 2>&1 || RC="$?"
+    python3 -m venv /tmp/foo > /dev/null 2>&1
+    RC="$?"
     if [ "$RC" = "1" ]; then
         echo "Unable to install a Python interpreter with a working venv module"
         exit 1
