@@ -1,5 +1,8 @@
 # Copyright 2019, Oath Inc.
 # Licensed under the terms of the BSD 3 Clause license. See LICENSE file in project root for terms.
 [build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools>40.0.0", "wheel"]  # PEP 508 specifications.
+requires = [
+  "setuptools >= 40.9.0",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"

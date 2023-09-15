@@ -84,3 +84,4 @@ __pycache__/
 /.mypy_cache
 /.pytest_cache
 /artifacts
+/pytest_py*.xml
