@@ -69,11 +69,18 @@ $ pip install pypirun
 The following will run the command `serviceping -c 1 yahoo.com` from the [serviceping](https://pypi.org/project/serviceping/) package:
 
 ```console
-dhubbard@mac:~$ pypirun serviceping serviceping -c 1 yahoo.com
+$ pypirun serviceping serviceping -c 1 yahoo.com
 SERVICEPING yahoo.com:80 (72.30.35.10:80).
 from yahoo.com:80 (72.30.35.10:80): time=65.50 ms                                                                                                                                                                                                                 --- yahoo.com ping statistics ---
 1 packages transmitted, 1 received, 0.0% package loss, time 73.038ms
 rtt min/avg/max/dev = 65.50/65.50/65.50/0.00 ms
+```
+
+### Run the screwdrivercd.installdeps module from the screwdrivercd package as a script
+
+```console
+$ pypirun -m screwdrivercd screwdrivercd.installdeps
+$
 ```
 
 ## Screwdriver V4 pypirun command

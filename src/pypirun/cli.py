@@ -45,7 +45,7 @@ def interpreter_parent(interpreter):
     return interpreter
 
 
-def install_and_run(package, command, interpreter, debug=False, no_cache_dir=False, upgrade_setuptools=False, upgrade_pip=False):
+def install_and_run(package, command, interpreter, module='', debug=False, no_cache_dir=False, upgrade_setuptools=False, upgrade_pip=False):
     """
     Install a package and run a command in a temporary Python virtualenv
     
@@ -59,7 +59,10 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
         
     interpreter: str
         The python interpreter executable to use to create the virtualenv
-    
+
+    module: str
+        Python module for the interpreter to run
+
     debug: bool, optional
         Print more useful debug output.  Default: False
     
@@ -125,8 +128,14 @@ def install_and_run(package, command, interpreter, debug=False, no_cache_dir=Fal
             print(f'Installed files: {list(venv_bin_after-venv_bin_before)}')
 
         # Run the command
+        if module:
+            command = f'{venv_dir}/bin/python3 -m {module} {command}'
+        else:
+            command = f'{venv_dir}/bin/{command}'
+        if debug:
+            print(f'Running: {command}')
         try:
-            subprocess.check_call(f'{venv_dir}/bin/{command}', shell=True)  # nosec
+            subprocess.check_call(command, shell=True)  # nosec
         except subprocess.CalledProcessError as error:  # pragma: no cover
             return error.returncode
         return exit_ok()  # pragma: no cover
@@ -151,7 +160,10 @@ def main():
     except ParseError:
         return 1
     interpreter = args.interpreter
-    command_file = args.command[0]
+    if args.module:
+        command_file = ''
+    else:
+        command_file = args.command[0]
     command = ' '.join(args.command)
     if not interpreter:    # pragma: no cover
         interpreter = interpreter_parent(sys.executable)
@@ -161,8 +173,8 @@ def main():
         print('Unable to find python3 interpreter')
         return 1
 
-    if args.always_install or not shutil.which(command_file):
-        return install_and_run(package=args.package, command=command, interpreter=interpreter, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools, upgrade_pip=args.upgrade_pip)
+    if args.always_install or args.module or not shutil.which(command_file):
+        return install_and_run(package=args.package, command=command, interpreter=interpreter, module=args.module, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools, upgrade_pip=args.upgrade_pip)
 
     try:
         subprocess.check_call(command, shell=True)  # nosec
