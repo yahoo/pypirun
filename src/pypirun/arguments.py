@@ -40,6 +40,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--no-cache-dir', default=False, action='store_true', help="Disable the pip cache when installing")
     parser.add_argument('--upgrade_pip', default=False, action='store_true', help='Upgrade the pip before installing packages')
     parser.add_argument('--upgrade_setuptools', default=False, action='store_true', help="Upgrade setuptools before installing packages")
+    parser.add_argument('--module', '-m', default=False, action='store_true', help='Run library module as a script')
     parser.add_argument('package', type=str, help='Package the command is in')
     parser.add_argument('command', nargs='*', help='Command to run')
 
@@ -66,5 +67,4 @@ def parse_arguments() -> argparse.Namespace:
     args = parser.parse_args(args=argv)
     args.package = command[0]
     args.command = command[1:]
-
     return args
