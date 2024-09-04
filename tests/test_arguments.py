@@ -39,3 +39,17 @@ class TestArguments(unittest.TestCase):
         self.assertFalse(result.upgrade_setuptools)
         self.assertEqual(result.package, 'foo')
         self.assertEqual(result.command, ['bar'])
+
+    def test_parse_arguments_module(self):
+        sys.argv = ['parse_arguments', '-m', 'foo', 'bar']
+        default_interpreter = os.environ.get('BASE_PYTHON', None)
+        result = pypirun.arguments.parse_arguments()
+        self.assertIsInstance(result, argparse.Namespace)
+        self.assertEqual(result.interpreter, default_interpreter)
+        self.assertFalse(result.debug)
+        self.assertFalse(result.always_install)
+        self.assertFalse(result.upgrade_pip)
+        self.assertFalse(result.upgrade_setuptools)
+        self.assertEqual(result.module, 'bar')
+        self.assertEqual(result.package, 'foo')
+        self.assertEqual(result.command, [])

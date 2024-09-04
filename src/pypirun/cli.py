@@ -129,15 +129,15 @@ def install_and_run(package, command, interpreter, module='', debug=False, no_ca
 
         # Run the command
         if module:
-            try:
-                subprocess.check_call(f'{venv_dir}/bin/python3 -m {command}', shell=True)  # nosec
-            except subprocess.CalledProcessError as error:  # pragma: no cover
-                return error.returncode
+            command = f'{venv_dir}/bin/python3 -m {module} {command}'
         else:
-            try:
-                subprocess.check_call(f'{venv_dir}/bin/{command}', shell=True)  # nosec
-            except subprocess.CalledProcessError as error:  # pragma: no cover
-                return error.returncode
+            command = f'{venv_dir}/bin/{command}'
+        if debug:
+            print(f'Running: {command}')
+        try:
+            subprocess.check_call(command, shell=True)  # nosec
+        except subprocess.CalledProcessError as error:  # pragma: no cover
+            return error.returncode
         return exit_ok()  # pragma: no cover
 
 
@@ -160,7 +160,10 @@ def main():
     except ParseError:
         return 1
     interpreter = args.interpreter
-    command_file = args.command[0]
+    if args.module:
+        command_file = ''
+    else:
+        command_file = args.command[0]
     command = ' '.join(args.command)
     if not interpreter:    # pragma: no cover
         interpreter = interpreter_parent(sys.executable)
@@ -170,19 +173,11 @@ def main():
         print('Unable to find python3 interpreter')
         return 1
 
-    if args.always_install or not shutil.which(command_file):
+    if args.always_install or args.module or not shutil.which(command_file):
         return install_and_run(package=args.package, command=command, interpreter=interpreter, module=args.module, debug=args.debug, no_cache_dir=args.no_cache_dir, upgrade_setuptools=args.upgrade_setuptools, upgrade_pip=args.upgrade_pip)
 
-    if args.module:
-        new_command = f'{interpreter} -m {command}'
-        print(f'Running: {new_command}')
-        try:
-            subprocess.check_call(new_command, shell=True)  # nosec
-        except subprocess.CalledProcessError as error:
-            return error.returncode
-    else:
-        try:
-            subprocess.check_call(command, shell=True)  # nosec
-        except subprocess.CalledProcessError as error:
-            return error.returncode
+    try:
+        subprocess.check_call(command, shell=True)  # nosec
+    except subprocess.CalledProcessError as error:
+        return error.returncode
     return 0  # pragma: no cover

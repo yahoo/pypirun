@@ -76,6 +76,11 @@ from yahoo.com:80 (72.30.35.10:80): time=65.50 ms                               
 rtt min/avg/max/dev = 65.50/65.50/65.50/0.00 ms
 ```
 
+### Run the serviceping module from the serviceping package as a script
+
+```
+```
+
 ## Screwdriver V4 pypirun command
 
 The pypirun package publishes a screwdriver v4 shared command called `python/pypirun`.

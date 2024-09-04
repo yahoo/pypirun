@@ -52,7 +52,7 @@ def parse_arguments() -> argparse.Namespace:
     command = []
     in_command = False
     for argument in sys.argv[1:]:
-        if not in_command and argument.startswith('--'):
+        if not in_command and argument.startswith('-'):
             argv.append(argument)
             continue
         in_command = True
@@ -65,6 +65,11 @@ def parse_arguments() -> argparse.Namespace:
         raise ParseError('Insufficient arguments provided')
 
     args = parser.parse_args(args=argv)
+
     args.package = command[0]
-    args.command = command[1:]
+    if args.module:
+        args.module = command[1]
+        args.command = command[2:]
+    else:
+        args.command = command[1:]
     return args
