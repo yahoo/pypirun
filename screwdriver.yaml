@@ -2,7 +2,7 @@ version: 4
 shared:
   environment:
     PACKAGE_DIRECTORY: src
-    TOX_ENVLIST: py39,py310,py311
+    TOX_ENVLIST: py39,py310,py311,py312
     
 jobs:
   validate_test:
