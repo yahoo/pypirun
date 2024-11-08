@@ -4,9 +4,13 @@
 pypirun module
 """
 from typing import List
-import pkg_resources
+from importlib.metadata import version, PackageNotFoundError
+
 
 
 __all__: List[str] = []
 __copyright__: str = "Copyright 2019, Oath Inc."
-__version__: str = pkg_resources.get_distribution("pypirun").version
+try:
+    __version__ = version("pypirun")
+except PackageNotFoundError:
+    __version__ = '0.0.0'
